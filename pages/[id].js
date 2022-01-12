@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import supabase from '../utils/supabase';
 
 export async function getServerSideProps({ params }) {
@@ -19,6 +20,17 @@ export async function getServerSideProps({ params }) {
 }
 
 export default function PostPage({ post = {} }) {
+  useEffect(() => {
+    const subscription = supabase
+      .from('comments')
+      .on('INSERT', (payload) => {
+        console.log(payload);
+      })
+      .subscribe();
+
+    return () => supabase.removeSubscription(subscription);
+  }, []);
+
   return (
     <div>
       <h1>{post.title}</h1>
